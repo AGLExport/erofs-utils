@@ -108,10 +108,20 @@ You may give multiple `--exclude-regex` options.
 Specify a \fIfile_contexts\fR file to setup / override selinux labels.
 .TP
 .BI "\-\-force-uid=" UID
-Set all file uids to \fIUID\fR.
+Set all file uids to \fIUID\fR. 
 .TP
 .BI "\-\-force-gid=" GID
 Set all file gids to \fIGID\fR.
+.TP
+.BI "\-\-uid-offset=" UIDOFFSET
+Add \fIUIDOFFSET\fR to all file uids.
+When this option used combine with force-uid, the final file uids sets
+\fIUID\fR + \fIUIDOFFSET\fR.
+.TP
+.BI "\-\-id-offset=" GIDOFFSET
+Add \fIGIDOFFSET\fR to all file gids.
+When this option used combine with force-gid, the final file gids sets
+\fIGID\fR + \fIGID-OFFSET\fR.
 .TP
 .B \-\-help
 Display this help and exit.
