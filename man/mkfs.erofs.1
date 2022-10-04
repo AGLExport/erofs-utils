@@ -32,6 +32,10 @@ big pcluster feature if needed (Linux v5.13+).
 Specify the level of debugging messages. The default is 2, which shows basic
 warning messages.
 .TP
+.BI "\-n " volume-name
+Set the volume name for the filesystem to volume-name.  The maximum length of
+the volume name is 16 bytes.
+.TP
 .BI "\-x " #
 Specify the upper limit of an xattr which is still inlined. The default is 2.
 Disable storing xattrs if < 0.

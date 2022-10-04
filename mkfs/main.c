@@ -80,6 +80,7 @@ static void usage(void)
 	fputs("usage: [options] FILE DIRECTORY\n\n"
 	      "Generate erofs image from DIRECTORY to FILE, and [options] are:\n"
 	      " -d#                   set output message level to # (maximum 9)\n"
+	      " -n volume-name        set the volume name (max 16 bytes).\n"
 	      " -x#                   set xattr tolerance to # (< 0, disable xattrs; default 2)\n"
 	      " -zX[,Y]               X=compressor (Y=compression level, optional)\n"
 	      " -C#                   specify the size of compress physical cluster in bytes\n"
@@ -212,7 +213,7 @@ static int mkfs_parse_options_cfg(int argc, char *argv[])
 	int opt, i;
 	bool quiet = false;
 
-	while ((opt = getopt_long(argc, argv, "C:E:T:U:d:x:z:",
+	while ((opt = getopt_long(argc, argv, "C:E:T:U:d:n:x:z:",
 				  long_options, NULL)) != -1) {
 		switch (opt) {
 		case 'z':
@@ -241,6 +242,14 @@ static int mkfs_parse_options_cfg(int argc, char *argv[])
 			cfg.c_dbg_lvl = i;
 			break;
 
+		case 'n':
+			if (optarg == NULL || strlen(optarg) > 16) {
+				erofs_err("invalid volume name");
+				return -EINVAL;
+			}
+			strncpy(sbi.volume_name, optarg, 16);
+			break;
+
 		case 'x':
 			i = strtol(optarg, &endptr, 0);
 			if (*endptr != '\0') {
@@ -255,6 +264,7 @@ static int mkfs_parse_options_cfg(int argc, char *argv[])
 			if (opt)
 				return opt;
 			break;
+
 		case 'T':
 			cfg.c_unix_timestamp = strtoull(optarg, &endptr, 0);
 			if (cfg.c_unix_timestamp == -1 || *endptr != '\0') {
@@ -483,6 +493,7 @@ int erofs_mkfs_update_super_block(struct erofs_buffer_head *bh,
 	sb.blocks       = cpu_to_le32(*blocks);
 	sb.root_nid     = cpu_to_le16(root_nid);
 	memcpy(sb.uuid, sbi.uuid, sizeof(sb.uuid));
+	memcpy(sb.volume_name, sbi.volume_name, sizeof(sb.volume_name));
 
 	if (erofs_sb_has_compr_cfgs())
 		sb.u1.available_compr_algs = sbi.available_compr_algs;
